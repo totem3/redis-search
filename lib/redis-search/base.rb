@@ -69,7 +69,7 @@ class Redis
       index_fields_changed = false
       redis_search_options[:ext_fields].each do |f|
         next if f.to_s == 'id'.freeze
-        field_method = "#{f}_changed?"
+        field_method = "saved_change_to_#{f}?"
         if methods.index(field_method.to_sym).nil?
           Redis::Search.warn("#{self.class.name} model reindex on update need #{field_method} method.")
           next
@@ -79,12 +79,12 @@ class Redis
       end
 
       begin
-        if send("#{redis_search_options[:title_field]}_changed?")
+        if send("saved_change_to_#{redis_search_options[:title_field]}?")
           index_fields_changed = true
         end
 
         if send(redis_search_options[:alias_field]) ||
-           send("#{redis_search_options[:title_field]}_changed?")
+           send("saved_change_to_#{redis_search_options[:title_field]}?")
           index_fields_changed = true
         end
       rescue
